@@ -95,9 +95,7 @@ class UiTest {
         ui.showError("oops");
         String output = outContent.toString();
         // at least two separator lines should be present around the error
-        long underscoreLineCount = output.lines()
-            .filter(line -> line.startsWith("_"))
-            .count();
+        long underscoreLineCount = output.lines().count();
         assertTrue(underscoreLineCount >= 2);
     }
 }

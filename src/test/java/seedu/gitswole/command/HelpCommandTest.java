@@ -115,7 +115,7 @@ class HelpCommandTest {
     void output_containsListFormats() throws GitSwoleException {
         new HelpCommand().execute(workouts, ui);
         String output = outContent.toString();
-        assertTrue(output.contains("list w/workout"));
+        assertTrue(output.contains("list w/WORKOUT"));
         assertTrue(output.contains("list all"));
     }
 
