@@ -1,10 +1,7 @@
 WORKOUT | pull | false
 ---
-WORKOUT | legs | false
+WORKOUT | legs | true
 EXERCISE | legpress | 0 | 0 | 0
 ---
 WORKOUT | push | false
-EXERCISE | benchpress | 68 | 3 | 10
-EXERCISE | tricep pushdown | 27 | 3 | 10
-EXERCISE | shoulder press | 21 | 3 | 10
 ---
