@@ -113,7 +113,9 @@ public class WorkoutList {
     public int numOfCompletedWorkouts() {
         int count = 0;
         for (Workout w : workouts) {
-            if (w.isDone()) count++;
+            if (w.isDone()) {
+                count++;
+            }
         }
         return count;
     }
