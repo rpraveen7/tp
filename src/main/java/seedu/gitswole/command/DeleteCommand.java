@@ -1,9 +1,6 @@
 package seedu.gitswole.command;
-
 import seedu.gitswole.assets.WorkoutList;
-import seedu.gitswole.exceptions.GitSwoleException;
 import seedu.gitswole.ui.Ui;
-
 import java.util.logging.Level;
 
 /**
