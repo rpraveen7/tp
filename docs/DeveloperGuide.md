@@ -12,7 +12,7 @@
    ```bash
    ./gradlew run
 
-## Acknowledgements
+## Design
 
 The **Architecture Diagram** below gives a high-level design overview of GitSwole.
 
@@ -151,7 +151,7 @@ pipe-delimited format:
 
 <img src="diagrams/architecture/Storage/StorageComponent.png" width="962" />
 
-## Design & implementation
+## Implementation
 
 {Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
 
@@ -242,6 +242,80 @@ Why it is implemented this way: Handling all list variations within a single
 ListCommand class centralizes the read-only display logic. The alternative would be 
 creating a class explosion (e.g., ListAllCommand, ListWorkoutCommand), which violates the 
 DRY principle since all three operations rely on the same UI rendering methods and underlying WorkoutList structures.
+
+### Edit Workout Feature
+
+The edit feature allows users to rename an existing workout or modify the details of
+a specific exercise within a workout. It is facilitated by `EditCommand`, which interacts
+with `WorkoutList` (to locate the target) and `Ui` (to drive an interactive prompt for new values).
+
+#### *How does it work?*
+
+**Edit Workout**
+> Only the workout name is changed.
+
+<img src="docs/diagrams/commands/edit/EditWorkout.png">
+
+**Edit Exercise**
+> The workout name, exercise name, weight, sets, and reps can all be modified.
+
+<img src="docs/diagrams/commands/edit/EditExercise.png">
+
+#### Implementation
+
+`EditCommand` extends `Command` and routes execution to one of two private handlers based
+on the presence of the `e/` flag in the raw input string:
+
+- `handleEditWorkout(WorkoutList, Ui)` — triggered when only the `w/` flag is present.
+  Renames the target workout.
+- `handleEditExercise(WorkoutList, Ui)` — triggered when both `w/` and `e/` flags are
+  present. Edits the fields of a specific exercise within the target workout.
+
+Given below is an example usage scenario for `edit w/Push Day e/Bench Press` and how
+`EditCommand` behaves at each step.
+
+**Step 1.** The user executes `edit w/Push Day e/Bench Press`. `Parser` creates an
+`EditCommand` with the full input string and returns it to `GitSwole`.
+
+**Step 2.** `GitSwole` calls `EditCommand#execute(workouts, ui)`. Since the input contains
+`e/`, execution is routed to `handleEditExercise()`.
+
+**Step 3.** `handleEditExercise()` calls `Parser.parseValue()` to extract the workout name
+(`Push Day`) and exercise name (`Bench Press`). It calls `WorkoutList#getWorkoutByName()`
+to retrieve the `Workout` object, then `Workout#getExerciseByName()` to retrieve the
+`Exercise` object. A `GitSwoleException` is thrown if either is not found.
+
+**Step 4.** The current workout and exercise details are printed via `Ui#printExercise()`.
+`Ui#readLine()` is called to collect the user's edit input in the format
+`wn/NewWorkout en/NewExercise wt/100 s/3 r/10`. Fields not provided are left unchanged.
+
+**Step 5.** `applyExerciseEdits()` parses the edit line using `Parser.parseValue()` for
+each supported flag (`wn/`, `en/`, `wt/`, `s/`, `r/`) and applies any non-null, non-empty
+values to the target objects. The internal `hasChanged` flag is set to `true` for any
+field that is modified.
+
+**Step 6.** `printUpdatedWorkout()` checks `hasChanged`. If `true`, it calls
+`Ui#printWorkout()` to show the updated workout. Otherwise, it notifies the user that
+no changes were recorded.
+
+The following sequence diagram shows how `edit w/Push Day e/Bench Press` is handled:
+
+<img src="diagrams/commands/edit/EditCommand.png" width="1047" />
+
+#### Design Considerations
+
+**Aspect: How edit input is collected**
+
+- **Alternative 1 (current choice):** Collect all edit fields in a single follow-up
+  prompt after displaying the current state.
+    - Pros: Familiar UX pattern (show-then-edit). Users can see the current values
+      before deciding what to change.
+    - Cons: Requires a second `readLine()` call mid-execution, making the control flow
+      less uniform compared to other commands.
+- **Alternative 2:** Multiple `readLine()` commands to get each change one-by-one.
+    - Pros: Step-by-step guidance and easy to follow, especially for new users.
+    - Cons: Longer process and seasoned user would be more comfortable typing all changes in one line.
+      (e.g: `wn/push en/bench wt/100 s/3 r/10`)
 
 ## Product scope
 ### Target user profile
