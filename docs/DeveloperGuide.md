@@ -2,16 +2,21 @@
 
 ## Setup Guide
 ### Steps
-1. {Step one e.g., Clone the repository: git clone https://github.com/your-repo}
-2. {Step two e.g., Install dependencies}
-3. {Step three e.g., Run the application}
-Workout Logging and Smart Overwriting Feature
+1. Clone the repository to your local machine:
+   ```bash
+   git clone https://github.com/AY2526S2-CS2113-W10-3/tp
+2. navigate into the project directory:
+   ```bash
+   cd tp
+3. Run the application using Gradle:
+   ```bash
+   ./gradlew run
 
-## Acknowledgements
+## Design
 
 The **Architecture Diagram** below gives a high-level design overview of GitSwole.
 
-<img src="team/architectureDiagram.png" width="450" />
+<img src="diagrams/architecture/architectureDiag.png" width="450" />
 
 Given below is a quick overview of the main components and how they interact with each other.
 
@@ -34,13 +39,120 @@ The bulk of the app's work is done by the following four components:
 The *Sequence Diagram* below shows how the components interact with each other for the scenario 
 where the user issues the command `add w/Push Day`.
 
-<img src="team/architectureSD.png" width="574" />
+<img src="diagrams/architecture/architectureSequenceDiagram.png" width="982" />
 
 Each of the four main components:
 - defines its API through a well-scoped class boundary.
 - implements its functionality using a concrete class that can be substituted or tested independently.
 
-## Design & implementation
+### UI Component
+
+**API:** `Ui.java`
+
+The `Ui` component handles all interaction with the user - it reads raw input and
+renders all output to the console. It has no knowledge of business logic or the data model.
+
+It exposes the following key operations:
+- `helloGreeting(WorkoutList)` - renders the startup banner, progress snapshot, and tier status.
+- `byeGreeting()` - renders a goodbye message when the application terminates
+- `readCommand()` - reads a single line of input from `System.in`.
+- `showMessage(String)` - prints any general output line.
+- `showError(String)` - prints a formatted error message wrapped in separator lines.
+- `printWorkouts(ArrayList<Workout>)` - iterates through and prints all workouts and their exercises.
+- `printWorkout(Workout)` - prints a single workout and its exercise list.
+- `showLine()` - prints a horizontal separator for visual clarity.
+
+> **Note:** `Ui` provides an overloaded constructor `Ui(InputStream in)` used exclusively
+> for testing, allowing simulated input to be injected without modifying the production code path.
+
+<img src="diagrams/architecture/Ui/UiComponent.png" width="573" />
+
+---
+
+### Parser Component
+
+**API:** `Parser.java`
+
+The `Parser` component receives the raw input string from `GitSwole` and maps it to the
+correct `Command` subclass. It uses an internal `HashMap<String, CommandType>` to perform
+O(1) keyword lookups, avoiding long if-else chains.
+
+It exposes the following key operations:
+- `readResponse(String, WorkoutList)` - the main entry point; parses the full input string
+  and returns a ready-to-execute `Command` object.
+- `parseValue(String, String)` *(static)* - extracts the value of a named flag
+  (e.g. `w/`, `e/`, `wt/`) from the input string using regex boundary detection.
+- `parseOptionalInt(String, String, int)` *(static)* - extracts an optional integer flag
+  value, returning a default if the flag is absent or malformed.
+
+The following commands are currently recognised:
+
+| Keyword | Maps to |
+|---|---|
+| `add` | `AddCommand` |
+| `delete` | `DeleteCommand` |
+| `edit` | `EditCommand` |
+| `find` | `FindCommand` |
+| `list` | `ListCommand` |
+| `mark` / `unmark` | `MarkCommand` |
+| `log` | `LogCommand` |
+| `loglist` | `LogListCommand` |
+| `help` | `HelpCommand` |
+| `exit` | `ExitCommand` |
+
+> **Note:** `parseValue` and `parseOptionalInt` are `public static` methods, allowing
+> `Command` subclasses to reuse the same flag-parsing logic directly without re-instantiating
+> a `Parser`.
+
+<img src="diagrams/architecture/Parser/ParserComponent.png" width="1171" />
+
+---
+
+### Command Component
+
+**API:** `Command.java`
+
+The `Command` component defines the contract that all executable actions must follow.
+`Command` is an abstract class with a single abstract method:
+
+```java
+public abstract void execute(WorkoutList workouts, Ui ui) throws GitSwoleException;
+```
+
+Each concrete subclass encapsulates the full logic for exactly one user-facing operation.
+The subclasses are:
+
+- `AddCommand` - adds a new `Workout` or `Exercise` to the `WorkoutList`.
+- `DeleteCommand` - removes a `Workout` or `Exercise` by index.
+- `EditCommand` - modifies the name of an existing `Workout` or `Exercise`.
+- `FindCommand` - searches for workouts by keyword.
+- `ListCommand` - lists workouts at summary, workout-specific, or full-detail scope.
+- `MarkCommand` - marks or unmarks a `Workout` as done.
+- `LogCommand` - initialises a workout logging session or logs an individual exercise stat.
+- `LogListCommand` - displays the full workout history from `HistoryStorage`.
+- `HelpCommand` - displays all available commands and their formats.
+- `ExitCommand` - sets `isExit = true` to signal the main loop to terminate.
+
+The `isExit()` method is defined in the base class and returns `false` for all commands
+except `ExitCommand`, which overrides it to return `true`.
+
+<img src="diagrams/architecture/Command/CommandComponent.png" width="1528" />
+
+---
+
+### Storage Component
+
+**API:** `Storage.java`, `HistoryStorage.java`
+
+The `Storage` component is responsible for persisting and loading application data
+to and from plain text files on disk. It is split into two classes with distinct responsibilities:
+
+**`Storage.java`** manages the primary workout data file. It uses a structured
+pipe-delimited format:
+
+<img src="diagrams/architecture/Storage/StorageComponent.png" width="950" />
+
+## Implementation
 
 The design of GitSwole follows a modular architecture inspired by the N-tier pattern, specifically tailored for a 
 CLI-based CRUD application. The system is divided into four primary logic components: `UI`, `Parser`, `Command`, 
@@ -111,16 +223,92 @@ makes it difficult for users to correct mistakes.
 
 The following sequence diagram illustrates how the `ListCommand` determines the scope of the listing and interacts with the `WorkoutList` and `Ui` components:
 
-<img src="team/listSD.png" width="600" />
+<img src="diagrams/commands/list/listSD.png" width="646" />
 
 This sequence diagram shows the execution flow of the `LogCommand`, highlighting the "sticky session" logic and the interaction with `HistoryStorage`:
 
-<img src="team/logSD.png" width="600" />
+<img src="diagrams/commands/log/logSD.png" width="886" />
 
 The following diagram details the internal "Smart Overwriting" mechanism within `HistoryStorage`:
 
-<img src="team/historystorageSD.png" width="600" />
+<img src="diagrams/architecture/Storage/historystorageSD.png" width="600" />
 
+
+---
+
+### Edit Workout Feature
+
+The edit feature allows users to rename an existing workout or modify the details of
+a specific exercise within a workout. It is facilitated by `EditCommand`, which interacts
+with `WorkoutList` (to locate the target) and `Ui` (to drive an interactive prompt for new values).
+
+#### *How does it work?*
+
+**Edit Workout**
+> Only the workout name is changed.
+
+<img src="diagrams/commands/edit/EditWorkout.png">
+
+**Edit Exercise**
+> The workout name, exercise name, weight, sets, and reps can all be modified.
+
+<img src="diagrams/commands/edit/EditExercise.png">
+
+#### Implementation
+
+`EditCommand` extends `Command` and routes execution to one of two private handlers based
+on the presence of the `e/` flag in the raw input string:
+
+- `handleEditWorkout(WorkoutList, Ui)` — triggered when only the `w/` flag is present.
+  Renames the target workout.
+- `handleEditExercise(WorkoutList, Ui)` — triggered when both `w/` and `e/` flags are
+  present. Edits the fields of a specific exercise within the target workout.
+
+Given below is an example usage scenario for `edit w/Push Day e/Bench Press` and how
+`EditCommand` behaves at each step.
+
+**Step 1.** The user executes `edit w/Push Day e/Bench Press`. `Parser` creates an
+`EditCommand` with the full input string and returns it to `GitSwole`.
+
+**Step 2.** `GitSwole` calls `EditCommand#execute(workouts, ui)`. Since the input contains
+`e/`, execution is routed to `handleEditExercise()`.
+
+**Step 3.** `handleEditExercise()` calls `Parser.parseValue()` to extract the workout name
+(`Push Day`) and exercise name (`Bench Press`). It calls `WorkoutList#getWorkoutByName()`
+to retrieve the `Workout` object, then `Workout#getExerciseByName()` to retrieve the
+`Exercise` object. A `GitSwoleException` is thrown if either is not found.
+
+**Step 4.** The current workout and exercise details are printed via `Ui#printExercise()`.
+`Ui#readLine()` is called to collect the user's edit input in the format
+`wn/NewWorkout en/NewExercise wt/100 s/3 r/10`. Fields not provided are left unchanged.
+
+**Step 5.** `applyExerciseEdits()` parses the edit line using `Parser.parseValue()` for
+each supported flag (`wn/`, `en/`, `wt/`, `s/`, `r/`) and applies any non-null, non-empty
+values to the target objects. The internal `hasChanged` flag is set to `true` for any
+field that is modified.
+
+**Step 6.** `printUpdatedWorkout()` checks `hasChanged`. If `true`, it calls
+`Ui#printWorkout()` to show the updated workout. Otherwise, it notifies the user that
+no changes were recorded.
+
+The following sequence diagram shows how `edit w/Push Day e/Bench Press` is handled:
+
+<img src="diagrams/commands/edit/EditCommand.png" width="1047" />
+
+#### Design Considerations
+
+**Aspect: How edit input is collected**
+
+- **Alternative 1 (current choice):** Collect all edit fields in a single follow-up
+  prompt after displaying the current state.
+    - Pros: Familiar UX pattern (show-then-edit). Users can see the current values
+      before deciding what to change.
+    - Cons: Requires a second `readLine()` call mid-execution, making the control flow
+      less uniform compared to other commands.
+- **Alternative 2:** Multiple `readLine()` commands to get each change one-by-one.
+    - Pros: Step-by-step guidance and easy to follow, especially for new users.
+    - Cons: Longer process and seasoned user would be more comfortable typing all changes in one line.
+      (e.g: `wn/push en/bench wt/100 s/3 r/10`)
 
 ## Product scope
 ### Target user profile
