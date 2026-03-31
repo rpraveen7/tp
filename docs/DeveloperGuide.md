@@ -5,13 +5,15 @@
 1. Clone the repository to your local machine:
    ```bash
    git clone https://github.com/AY2526S2-CS2113-W10-3/tp
+   ```
 2. navigate into the project directory:
    ```bash
    cd tp
+   ```
 3. Run the application using Gradle:
    ```bash
    ./gradlew run
-
+    ```
 ## Design
 
 The **Architecture Diagram** below gives a high-level design overview of GitSwole.
@@ -39,7 +41,7 @@ The bulk of the app's work is done by the following four components:
 The *Sequence Diagram* below shows how the components interact with each other for the scenario 
 where the user issues the command `add w/Push Day`.
 
-<img src="diagrams/architecture/architectureSequenceDiagram.png" width="982" />
+<img src="diagrams/architecture/ArchitectureSequenceDiagram.png" width="982" />
 
 Each of the four main components:
 - defines its API through a well-scoped class boundary.
@@ -159,8 +161,9 @@ CLI-based CRUD application. The system is divided into four primary logic compon
 and `Storage`. These components interact with a central `Assets` data model to perform operations. The application is 
 designed to be extensible, allowing new commands and storage formats to be added with minimal friction by extending the 
 base `Command` class and utilizing dedicated storage handlers.
+
 ### Ethan's enhancement
-### Delete Feature
+#### 1. Delete Feature
 
 The delete mechanism is facilitated by the `DeleteCommand.java` class. It extends from the abstract class `Command` and overrides the `execute()` method, which throws the exception `GitSwoleException`, to execute the deletion of workouts/exercises.
 
@@ -192,8 +195,8 @@ When the user types in a command like the one shown above, it goes through the f
 This diagram shows the sequence in which the delete command is entered.
 
 <img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" width="950" />
-#### Design Considerations
 
+#### Design Considerations
 **Alternative 1 (Considered): Delete by list index**
 
 The user specifies the target by its position number in the list (e.g. `delete 1`).
@@ -203,7 +206,7 @@ The user specifies the target by its position number in the list (e.g. `delete 1
 
 ---
 
-### Storage Feature
+#### Storage Feature
 
 The `Storage` class saves and loads the data from `WorkoutList` through a plaintext file on the hardware memory. When the application is started and run, the previous data is immediately loaded into the application.
 
@@ -232,8 +235,8 @@ Each workout block consists of:
 
 <img src="diagrams/architecture/Storage/StorageLoad-Sequence_Diagram__Storage_load__.png" width="742" />
 
- 
 ---
+
 ### Praveen's enhancement
 
 This enhancement introduces a robust workout logging and history tracking system, along with a multi-tiered listing 
@@ -307,10 +310,83 @@ The following diagram details the internal "Smart Overwriting" mechanism within 
 
 <img src="diagrams/architecture/Storage/historystorageSD.png" width="600" />
 
+---
+
+### ShuoJie's enhancement: History Retrieval (`LogList`)
+
+The `LogList` enhancement provides users with a dedicated way to view their past workout sessions chronologically. While the standard `list` command displays workout templates (routines), `loglist` retrieves actual performed data from the persistent history file.
+
+#### Implementation
+
+The `LogList` mechanism is centered around the `LogListCommand` class. It serves as the bridge between the `HistoryStorage` component and the `Ui` component.
+
+**How it works:**
+The execution flow involves the following steps:
+
+1. **Initialization:** When the user enters `loglist`, the `Parser` identifies the keyword and returns a `LogListCommand` object.
+2. **Data Fetching:** Upon calling `execute()`, the command requests all log data from `HistoryStorage#loadHistory()`.
+3. **Validation:** The command checks if the returned list is empty. If no history exists (e.g., a new user), it directs the `Ui` to show a "No history found" message.
+4. **Iterative Display:** If data exists, the command iterates through the list of log strings and calls `Ui#showMessage()` for each entry to render them in the terminal.
+
+#### Sequence Diagram
+
+The diagram below shows how the components interact when a user requests to see their workout history.
+
+<img src="diagrams/commands/loglist/loglistSD.png" width="700" />
+
+#### Design Considerations
+
+**Aspect: Data Source for History**
+
+* **Alternative 1 (Current Choice): Reading directly from `history.txt` via `HistoryStorage`.**
+    * **Pros:** Ensures that the user sees the most up-to-date data saved on the disk, even if the file was edited manually. It keeps the memory footprint low as history is only loaded when requested.
+    * **Cons:** Slightly slower than reading from an in-memory list because it requires File I/O.
+* **Alternative 2: Keeping an in-memory `ArrayList` of history logs.**
+    * **Pros:** Faster retrieval as no file reading is required during the command execution.
+    * **Why Rejected:** As a user logs more workouts over months, keeping every historical entry in RAM is inefficient. Since `loglist` is not a high-frequency command (like `add` or `log`), the slight trade-off in speed for better memory management was preferred.
 
 ---
 
-### Edit Workout Feature
+### Vetri's Enhancement
+
+This enhancement introduces the help and exit commands, along with an in-place workout and exercise editing system.
+It is composed of the `HelpCommand`, `ExitCommand`, and `EditCommand` classes.
+
+#### 1. Help Command (`HelpCommand`)
+
+The help feature displays a formatted reference of all available commands and their usage syntax directly in the 
+terminal.
+
+* **Implementation:**
+  `HelpCommand` extends the base `Command` class. It stores all command descriptions in a 2D `String` array, where each
+  row contains a command's syntax, its corresponding description, and an example.
+* On `execute()`, it iterates through the array and renders each row through `Ui#showMessage()`.
+
+* **Design Considerations:**
+    - **Why it is implemented this way:** Using a 2D array loop instead of hardcoded individual print statements makes
+      it trivial to add or update command entries — only the array data needs to change, not the rendering logic.
+    - **Alternatives considered:** A series of individual `Ui#showMessage()` calls, one per command. This was rejected
+      as it scatters the command reference data across multiple lines and makes maintenance error-prone.
+
+#### 2. Exit Command (`ExitCommand`)
+
+The exit feature cleanly terminates the application loop and displays a goodbye message.
+
+* **Implementation:**
+  `ExitCommand` extends the base `Command` class and overrides `isExit()` to return `true`. On `execute()`, it calls
+  `Ui#byeGreeting()` to display the farewell message. The main loop in `GitSwole` checks `Command#isExit()` after every
+  command execution and breaks out of the loop when `true` is returned, triggering a clean shutdown.
+
+* **Design Considerations:**
+    - **Why it is implemented this way:** Encoding the exit signal as an override of `isExit()` in the base `Command`
+      class keeps the main loop uniform, every iteration checks the same method regardless of which command ran,
+      with no special-casing needed for the exit path.
+    - **Alternatives considered:** Throwing a dedicated `ExitException` to break out of the loop within `run()`.
+      This was rejected because using exceptions for control flow is considered bad practice, as exceptions should
+      signal unexpected errors, not a normal user-initiated shutdown. Declaring `ExitCommand` as a subclass of
+      `Command` keeps the exit path uniform with every other command, requiring no special-casing in the main loop.
+
+#### 3. Edit Workout and Exercise Feature (`EditCommand`)
 
 The edit feature allows users to rename an existing workout or modify the details of
 a specific exercise within a workout. It is facilitated by `EditCommand`, which interacts
@@ -363,7 +439,7 @@ Given below is an example usage scenario for `edit w/Push Day e/Bench Press` and
 to retrieve the `Workout` object, then `Workout#getExerciseByName()` to retrieve the
 `Exercise` object. A `GitSwoleException` is thrown if either is not found.
 
-**Step 4.** The current workout and exercise details are printed via `Ui#printExercise()`.
+**Step 4.** The current workout and exercise details are2 printed via `Ui#printExercise()`.
 `Ui#readLine()` is called to collect the user's edit input in the format
 `wn/NewWorkout en/NewExercise wt/100 s/3 r/10`. Fields not provided are left unchanged.
 
@@ -378,7 +454,7 @@ no changes were recorded.
 
 The following sequence diagram shows how `edit w/Push Day e/Bench Press` is handled:
 
-<img src="diagrams/commands/edit/EditCommand.png" width="1047" />
+<img src="diagrams/commands/edit/EditCommand.png" width="1047"/>
 
 #### Design Considerations
 
