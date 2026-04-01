@@ -27,6 +27,7 @@ GitSwole provides fast, CLI-based workout tracking for gym-goers who dislike slo
     - [Feature 17: Log Workout Session](#feature-17-log-workout-session)
     - [Feature 18: Log Exercise Stats](#feature-18-log-exercise-stats)
     - [Feature 19: History Storage](#feature-19-history-storage)
+    - [Feature 20: View History] (#feature-20-view-history)
 - [FAQ](#faq)
 - [Known Issues](#known-issues)
 - [Command Summary](#command-summary)
@@ -235,11 +236,24 @@ exit
 
 ---
 
-### Feature 12: Mark
+### Feature 12: Mark / Unmark Workout
 
-**Purpose:** Marks a workout as complete.
+**Purpose:** Marks a workout session as completed or resets it to incomplete. This helps you track which routines you have finished during your current training cycle.
 
-*(Details TBC)*
+**Format:**
+```
+mark w/WORKOUT_NAME
+unmark w/WORKOUT_NAME
+```
+
+**Example:**
+```
+Input: mark w/push day
+Output: [X] push day
+
+Input: unmark w/push day
+Output: [ ] push day
+```
 
 ---
 
@@ -356,6 +370,37 @@ Output: Stats updated for Bench Press in Push Day!
 
 **Format:**
 (Automatic upon using the `log` command)
+
+---
+
+### Feature 20: View History
+
+**Purpose:** Displays the training history. User can view all logs, or filter by a specific workout or date.
+
+**Format:**
+```
+loglist
+loglist w/WORKOUT_NAME
+loglist d/DATE
+```
+
+* If `w/` is provided, history is filtered to only show sessions for that specific workout.
+* If `d/` is provided, history is filtered by the specified date (Format: `dd-MM-yyyy`).
+* If no flags are provided, the complete history of all sessions is displayed.
+
+**Example:**
+```
+Input: loglist d/24-03-2026
+Output: === LOG HISTORY FOR: 24-03-2026 ===
+        [24-03-2026, 09:00] PUSH DAY workout
+        Bench Press : 80kg | 3 sets | 10 reps
+        
+Input: loglist w/push day
+Output: === LOG HISTORY FOR: PUSH DAY ===
+        [24-03-2026, 09:00] PUSH DAY workout
+        Bench Press : 80kg | 3 sets | 10 reps
+        [21-03-2026, 10:15] PUSH DAY workout
+```
 
 ---
 

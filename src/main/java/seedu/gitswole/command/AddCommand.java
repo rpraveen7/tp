@@ -43,6 +43,9 @@ public class AddCommand extends Command {
      */
     @Override
     public void execute(WorkoutList workouts, Ui ui) throws GitSwoleException {
+        assert workouts != null : "WorkoutList must not be null";
+        assert ui != null : "Ui must not be null";
+
         if (response.contains(" e/")) {
             handleAddExercise(workouts, ui);
         } else {
