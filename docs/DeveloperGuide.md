@@ -1,12 +1,13 @@
 # Developer Guide
 ## Table of Contents
-1. [Setup Guide](#setup-guide)
-2. [Design](#design)
+1. [Acknowledgements](#Acknowledgements)
+2. [Setup Guide](#setup-guide)
+3. [Design](#design)
     - [UI Component](#ui-component)
     - [Parser Component](#parser-component)
     - [Command Component](#command-component)
     - [Storage Component](#storage-component)
-3. [Implementation](#implementation)
+4. [Implementation](#implementation)
     - [Storage Feature](#storage-feature)
     - [Delete Feature (`DeleteCommand`)](#delete-feature)
     - [Edit Workout and Exercise Feature (`EditCommand`)](#edit-workout-and-exercise-feature-editcommand)
@@ -17,20 +18,28 @@
     - [History Retrieval (`LogList`)](#history-retrieval-loglist)
     - [Help Command (`HelpCommand`)](#help-command-helpcommand)
     - [Exit Command (`ExitCommand`)](#exit-command-exitcommand)
-4. [Product Scope](#product-scope)
+5. [Product Scope](#product-scope)
     - [Target User Profile](#target-user-profile)
     - [Value Proposition](#value-proposition)
-5. [User Stories](#user-stories)
-6. [Non-Functional Requirements](#non-functional-requirements)
-7. [Glossary](#glossary)
-8. [Instructions for Manual Testing](#instructions-for-manual-testing)
+6. [User Stories](#user-stories)
+7. [Non-Functional Requirements](#non-functional-requirements)
+8. [Glossary](#glossary)
+9. [Instructions for Manual Testing](#instructions-for-manual-testing)
 
-6. [Non-Functional Requirements](#non-functional-requirements)
+10. [Non-Functional Requirements](#non-functional-requirements)
 
-7. [Glossary](#glossary)
+11. [Glossary](#glossary)
 
-8. [Instructions for Manual Testing](#instructions-for-manual-testing)
+12. [Instructions for Manual Testing](#instructions-for-manual-testing)
+13. 
+## Acknowledgements
 
+* [JUnit 5](https://junit.org/junit5/) - Used for unit testing across all components.
+* [Checkstyle](https://checkstyle.sourceforge.io/) - Used to enforce coding standards and formatting.
+* [AddressBook-Level3](https://se-education.org/addressbook-level3/) - Project structure, N-tier architecture design, and specific `Parser` command-handling patterns were heavily inspired by and adapted from the se-edu initiative.
+* [TA ASCII Art Generator](https://patorjk.com/software/taag/) - Used to generate the GitSwole terminal startup logo.
+* [Baeldung: Java FileWriter](https://www.baeldung.com/java-write-to-file) - Adapted code snippets from this guide for our `HistoryStorage` smart-overwriting logic.
+* [StackOverflow - "Regex for parsing flags"](https://stackoverflow.com/questions/...) - Adapted the regex boundary detection logic used in `Parser.parseValue()`.
 ## Setup Guide
 
 ### Prerequisites
