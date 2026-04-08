@@ -520,10 +520,15 @@ no changes were recorded.
       (e.g: `wn/push en/bench wt/100 s/3 r/10`)
 
 
-**Sequence Diagram:**
+**Sequence Diagram:**  
+**Overview:**  
+<img src="diagrams/commands/edit/EditCommand.png" width="300"/>
 
-<img src="diagrams/commands/edit/EditCommand.png" width="1047"/>
+**Edit Workout:**  
+<img src="diagrams/commands/edit/EditWorkoutCommand.png" width="700"/>
 
+**Edit Exercise:**  
+<img src="diagrams/commands/edit/EditExerciseCommand.png" width="900"/>
 ---
 
 ### Wan's Enhancement
