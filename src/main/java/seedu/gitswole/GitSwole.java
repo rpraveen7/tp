@@ -31,7 +31,6 @@ public class GitSwole {
      * Re-initializes the static UI and workout list (primarily for testing).
      */
     public GitSwole() {
-        ui = new Ui();
         workouts = loadWorkoutsStatic();
     }
 
