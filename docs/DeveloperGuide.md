@@ -1,12 +1,13 @@
 # Developer Guide
 ## Table of Contents
-1. [Setup Guide](#setup-guide)
-2. [Design](#design)
+1. [Acknowledgements](#Acknowledgements)
+2. [Setup Guide](#setup-guide)
+3. [Design](#design)
     - [UI Component](#ui-component)
     - [Parser Component](#parser-component)
     - [Command Component](#command-component)
     - [Storage Component](#storage-component)
-3. [Implementation](#implementation)
+4. [Implementation](#implementation)
     - [Storage Feature](#storage-feature)
     - [Delete Feature (`DeleteCommand`)](#delete-feature)
     - [Edit Workout and Exercise Feature (`EditCommand`)](#edit-workout-and-exercise-feature-editcommand)
@@ -17,20 +18,28 @@
     - [History Retrieval (`LogList`)](#history-retrieval-loglist)
     - [Help Command (`HelpCommand`)](#help-command-helpcommand)
     - [Exit Command (`ExitCommand`)](#exit-command-exitcommand)
-4. [Product Scope](#product-scope)
+5. [Product Scope](#product-scope)
     - [Target User Profile](#target-user-profile)
     - [Value Proposition](#value-proposition)
-5. [User Stories](#user-stories)
-6. [Non-Functional Requirements](#non-functional-requirements)
-7. [Glossary](#glossary)
-8. [Instructions for Manual Testing](#instructions-for-manual-testing)
+6. [User Stories](#user-stories)
+7. [Non-Functional Requirements](#non-functional-requirements)
+8. [Glossary](#glossary)
+9. [Instructions for Manual Testing](#instructions-for-manual-testing)
 
-6. [Non-Functional Requirements](#non-functional-requirements)
+10. [Non-Functional Requirements](#non-functional-requirements)
 
-7. [Glossary](#glossary)
+11. [Glossary](#glossary)
 
-8. [Instructions for Manual Testing](#instructions-for-manual-testing)
+12. [Instructions for Manual Testing](#instructions-for-manual-testing)
+13. 
+## Acknowledgements
 
+* [JUnit 5](https://junit.org/junit5/) - Used for unit testing across all components.
+* [Checkstyle](https://checkstyle.sourceforge.io/) - Used to enforce coding standards and formatting.
+* [AddressBook-Level3](https://se-education.org/addressbook-level3/) - Project structure, N-tier architecture design, and specific `Parser` command-handling patterns were heavily inspired by and adapted from the se-edu initiative.
+* [TA ASCII Art Generator](https://patorjk.com/software/taag/) - Used to generate the GitSwole terminal startup logo.
+* [Baeldung: Java FileWriter](https://www.baeldung.com/java-write-to-file) - Adapted code snippets from this guide for our `HistoryStorage` smart-overwriting logic.
+* [StackOverflow - "Regex for parsing flags"](https://stackoverflow.com/questions/...) - Adapted the regex boundary detection logic used in `Parser.parseValue()`.
 ## Setup Guide
 
 ### Prerequisites
@@ -594,13 +603,19 @@ GitSwole enables fitness-focused CLI users to manage, log, and track workouts en
 
 ## User Stories
 
-| Version | As a ...          | I want to ...                                                                             | So that I can ...                                                              |
-|---------|-------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| v1.0    | new user          | see all available commands and their usage syntax                                         | quickly learn how to use the application without referring to external docs    |
-| v1.0    | gym-goer          | add workouts and exercises with their weight, sets, and reps                              | build and keep track of my training routine                                    |
-| v2.0    | methodical user   | edit the name or details of an existing workout or exercise                               | correct mistakes or update my training plan without deleting and re-adding     |
-| v2.0    | committed fitspo  | view all my past logged workout sessions in a single command                              | identify trends or gaps in my routine and plan my next workout better          |
-| v2.0    | reflective gym-goer | log remarks for each exercise during a session                                          | remember how each session felt and track qualitative progress over time        |
+| Version | As a ...                                                    | I want to ...                                                                      | So that I can ...                                                                    |
+|---------|-------------------------------------------------------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| v1.0    | new user                                                    | see all available commands and their usage syntax                                  | quickly learn how to use the application without referring to external docs          |
+| v1.0    | gym-goer planning my first workout                          | add workouts and exercises with their weight, sets, and reps                       | build and keep track of my training routine, so that I would have a plan when I go to the gym |
+| v1.0    | user who just finished their gym session                    | quickly log my workout with a simple command                                       | record my progress without spending so much time typing                              |
+| v1.0    | user who wants to seeriously use the app to manage workouts | clear sample or preloaded data witih one command                                   | start afresh with the workouts that I want to use                                    |
+| v1.0    | first time user who is confused about how to use the app    | have a list of the commands I can type into the CLI                                | get started quickly without reading lengthy documentation                            |
+| v2.0    | methodical user                                             | edit the name or details of an existing workout or exercise                        | correct mistakes or update my training plan without deleting and re-adding           |
+| v2.0    | neat user who wants to keep track of completed workouts     | mark the workout and exercise as done                                              | so that i can visually confirm my progress                                           |
+| v2.0    | committed fitspo                                            | view all my past logged workout sessions in a single command                       | identify trends or gaps in my routine and plan my next workout better                |
+| v2.0    | reflective gym-goer                                         | log remarks for each exercise during a session                                     | remember how each session felt and track qualitative progress over time              |
+| v2.0    | busy student                                                | see a summary of total workout duration and total volume after finishing a session | I can feel productive before heading back to study                                   |
+
 
 ---
 
