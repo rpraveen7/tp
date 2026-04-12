@@ -208,6 +208,46 @@ public class Parser {
     }
 
     /**
+     * Extracts an integer value associated with a flag in the user's input string,
+     * validates it against a maximum limit, and throws an exception on failure.
+     *
+     * @param input        The full command string entered by the user.
+     * @param prefix       The flag to search for (e.g. {@code "wt/"}, {@code "s/"}, {@code "r/"}).
+     * @param defaultValue The value to return if the flag is missing.
+     * @param maxLimit     The maximum allowed value for this field.
+     * @param fieldLabel   A human-readable label for error messages (e.g. "Weight").
+     * @return The parsed integer value, or {@code defaultValue} if the flag is absent.
+     * @throws GitSwoleException If the value is not a valid number or exceeds the maximum limit.
+     */
+    public static int parseAndValidateInt(String input, String prefix, int defaultValue, int maxLimit,
+                                          String fieldLabel) throws GitSwoleException {
+        assert input != null : "Input string must not be null";
+        assert prefix != null : "Prefix must not be null";
+
+        String valueStr = parseValue(input, prefix);
+        if (valueStr == null) {
+            return defaultValue;
+        }
+
+        try {
+            long val = Long.parseLong(valueStr.trim());
+            if (val < 0) {
+                throw new GitSwoleException(GitSwoleException.ErrorType.NEG_INPUT,
+                        fieldLabel + " cannot be negative. Usage: " + prefix + "NUMBER");
+            }
+            if (val > maxLimit) {
+                throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT,
+                        "Whoa there, David Goggins! " + fieldLabel + " cannot exceed " + maxLimit + ".");
+            }
+            return (int) val;
+        } catch (NumberFormatException e) {
+            throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT,
+                    "Invalid input for " + fieldLabel + ": '" + valueStr +
+                            "'. Please enter a valid number (e.g., " + prefix + "10).");
+        }
+    }
+
+    /**
      * Extracts an integer value associated with a flag in the user's input string.
      *
      * @param input        The full command string entered by the user.
