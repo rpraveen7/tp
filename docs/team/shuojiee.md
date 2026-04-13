@@ -1,4 +1,4 @@
-# GitSwole Project Portfolio Page (Shuo Jie)
+# GitSwole Project Portfolio Page (Aw Shuo Jie)
 
 ## Project: GitSwole
 
