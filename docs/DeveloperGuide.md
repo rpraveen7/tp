@@ -17,7 +17,7 @@
     - [Mark and Unmark Workout Feature (`MarkCommand`)](#mark-and-unmark-workout-feature-markcommand)
     - [Smart Workout Logging (`LogCommand`)](#smart-workout-logging-logcommand)
     - [Persistent History Storage (`HistoryStorage`)](#persistent-history-storage-historystorage--historytxt)
-    - [History Retrieval (`LogList`)](#history-retrieval-feature)
+    - [History Retrieval (`LogList`)](#history-retrieval-loglistcommand)
     - [Help Command (`HelpCommand`)](#help-command-helpcommand)
     - [Exit Command (`ExitCommand`)](#exit-command-exitcommand)
 5. [Product Scope](#product-scope)
@@ -569,7 +569,7 @@ The following diagram details the internal "Smart Overwriting" mechanism within 
 
 ---
 
-### History Retrieval Feature (`LogListCommand`)
+### History Retrieval (`LogListCommand`)
 
 The `LogListCommand` serves as the retrieval interface for the `HistoryStorage` component, allowing users to review their chronologically logged training data.
 
