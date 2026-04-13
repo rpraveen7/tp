@@ -28,7 +28,7 @@ Allows users to create new sessions (`add w/WORKOUT`) or add specific exercise s
 
 ### New Feature: Mark/Unmark Workout Completion (`MarkCommand`)
 
-Provides a way to track session completion with visible status symbols (e.g., `[X]` for completed, `[ ]` for incomplete). This allows users to review their actual progress at a glance rather than relying on memory.
+Provides users a way to track session completion with visible status symbols (e.g., `[X]` for completed, `[ ]` for incomplete) and review their actual progress at a glance.
 
 **Highlights:** The status symbol required coordinated changes across `MarkCommand.java`, `ListCommand.java`, and `Ui.java` to ensure display consistency regardless of how the list was accessed. The implementation was refined across several PRs based on team feedback.
 
@@ -38,7 +38,7 @@ Provides a way to track session completion with visible status symbols (e.g., `[
 
 Displays a chronological history of the user's completed workout sessions. This is essential for the "tracking" aspect of the app, as it allows users to retrieve data written to disk.
 
-**Highlights:** This was my most technically involved feature. I built `LogListCommand.java` from scratch and created `HistoryStorage.java` to handle reading workout history from disk. Managing file I/O correctly — ensuring history is read in the right order and gracefully handling edge cases like an empty history file — required the most iteration. `LogListCommand` is my top contributor by LoC (169 lines of functional code, 187 lines of test code).
+**Highlights:** I built `LogListCommand.java` from scratch and modified `HistoryStorage.java` to handle reading workout history from disk. Managing file I/O correctly — ensuring history is read in the right order and gracefully handling edge cases like an empty history file — required the most iteration.
 
 ---
 
