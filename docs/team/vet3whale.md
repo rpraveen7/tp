@@ -54,6 +54,7 @@ returns the appropriate `Command` subclass.
 unblocking teammates to build commands independently.
 - **Parser Design:** Established `parseCommand` and `readResponse`, 
 mapping command keywords to `CommandType` via a `HashMap` for easy extensibility.
+
 ---
 
 ### Enhancements to Existing Features
